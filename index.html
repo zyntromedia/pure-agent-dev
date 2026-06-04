@@ -1,18 +1,11 @@
-
-
-
-
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<!-- Playables SDK -->
 <script>// Playables SDK v1.0.0
 // Game lifecycle bridge: rAF-based game-ready detection + event communication
 (function() {
 'use strict';
 
-// Idempotency: skip if already initialized (e.g., server-side injection
-// followed by client-side inject-javascript via the Bloks webview component).
 if (window.playablesSDK) return;
 
 var HANDLER_NAME = 'playablesGameEventHandler';
@@ -24,8 +17,6 @@ var firstInteractionSent = false;
 var errorSent = false;
 var frameCount = 0;
 var originalRAF = window.requestAnimationFrame;
-
-// --- Transport Layer ---
 
 function hasIOSBridge() {
 return !!(window.webkit &&
@@ -72,12 +63,10 @@ return;
 if (isInIframe()) {
 try {
 window.parent.postMessage(message, '');
-} catch (e) { / ignore */ }
+} catch (e) { /* ignore */ }
 return;
 }
 }
-
-// --- rAF Game-Ready Detection ---
 
 function onFrame() {
 if (gameReadySent) return;
@@ -114,8 +103,6 @@ return originalRAF.call(window, callback);
 };
 }
 
-// --- First User Interaction Detection ---
-
 function setupFirstInteractionDetection() {
 var events = ['touchstart', 'mousedown', 'keydown'];
 
@@ -140,8 +127,6 @@ document.addEventListener('DOMContentLoaded', setupFirstInteractionDetection);
 setupFirstInteractionDetection();
 }
 
-// --- Auto Error Capture ---
-
 window.addEventListener('error', function(event) {
 if (errorSent) return;
 errorSent = true;
@@ -164,8 +149,6 @@ type: 'unhandled_promise_rejection',
 auto_captured: true
 });
 });
-
-// --- Public API ---
 
 window.playablesSDK = {
 complete: function(score) {
@@ -190,7 +173,6 @@ sendEvent(eventName, payload);
 }
 };
 
-// Kick off rAF detection in case no game code calls rAF immediately
 if (originalRAF) {
 originalRAF.call(window, onFrame);
 }
@@ -263,7 +245,6 @@ to { opacity: 1; transform: translateY(0); }
 </style>
 </head>
 <body class="min-h-screen text-zinc-100 selection:bg-violet-500/30 selection:text-violet-200">
-<!-- Background -->
 <div class="fixed inset-0 -z-10">
 <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-[#050810] to-black"></div>
 <div class="absolute top-[-20%] -left-[10%] w-[600px] h-[600px] bg-violet-600/20 rounded-full blur-[140px] animate-pulse"></div>
@@ -272,7 +253,6 @@ to { opacity: 1; transform: translateY(0); }
 </div>
 
 <div class="relative z-10 min-h-screen flex flex-col">
-<!-- Header -->
 <header class="sticky top-0 z-20 border-b border-white/[0.05] glass-strong">
 <div class="max-w-[920px] mx-auto px-4 sm:px-6 h-[68px] flex items-center justify-between">
 <div class="flex items-center gap-3">
@@ -294,7 +274,6 @@ to { opacity: 1; transform: translateY(0); }
 </header>
 
 <main class="flex-1 w-full max-w-[920px] mx-auto px-4 sm:px-6 py-8 sm:py-12">
-<!-- Status -->
 <div class="glass rounded-[28px] p-5 sm:p-6 mb-6 fade-in">
 <div class="flex items-center justify-between mb-4">
 <div class="flex items-center gap-2.5">
@@ -333,7 +312,6 @@ to { opacity: 1; transform: translateY(0); }
 </div>
 </div>
 
-<!-- Chat -->
 <div class="glass rounded-[28px] p-5 sm:p-7 fade-in [animation-delay:100ms]">
 <div class="flex items-start justify-between mb-5">
 <div>
@@ -357,7 +335,6 @@ autofocus
 </div>
 </div>
 
-<!-- Examples -->
 <div class="flex flex-wrap gap-2 mt-3">
 <button type="button" data-example="สวัสดีครับ CrystalCastle" class="example-chip text-[12px] px-3 py-1.5 rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-zinc-400 hover:text-zinc-200 transition">สวัสดีครับ</button>
 <button type="button" data-example="แนะนำความสามารถของ API นี้หน่อย" class="example-chip text-[12px] px-3 py-1.5 rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-zinc-400 hover:text-zinc-200 transition">แนะนำ API</button>
@@ -390,7 +367,6 @@ class="group relative h-[38px] px-5 rounded-xl bg-white text-black font-medium t
 </div>
 </form>
 
-<!-- Response -->
 <div id="response-container" class="hidden mt-6">
 <div class="flex items-center gap-2 mb-3">
 <div class="w-5 h-5 rounded-lg bg-violet-500/20 border border-violet-500/30 flex items-center justify-center">
@@ -424,12 +400,176 @@ class="group relative h-[38px] px-5 rounded-xl bg-white text-black font-medium t
 </div>
 </div>
 </div>
+</main>
+
+<footer class="max-w-[920px] w-full mx-auto px-4 sm:px-6 py-6 border-t border-white/[0.05] text-center text-zinc-600 text-[12px]">
+&copy; 2026 CrystalCastle. All rights reserved. Powered by Azure OpenAI.
+</footer>
 </div>
 
-<!-- Info -->
-<div class="mt-8 grid sm:grid-cols-3 gap-3">
-<div class="group relative overflow-hidden rounded-2xl border border-white/5 bg-white/[0.02] p-4 hover:bg-white/[0.04] transition">
-<div class="absolute inset-0 bg-gradient-to-br from-violet-500/10 to-transparent opacity-0 group-hover:opacity-100 transition"></div>
-<div class="relative">
-<p class="text-[11px
-  
+<script>
+const BASE_URL = 'https://crystalcastle-api.azurewebsites.net';
+
+// Elements
+const statusDot = document.getElementById('status-dot');
+const statusPulse = document.getElementById('status-pulse');
+const statusText = document.getElementById('status-text');
+const statusLatency = document.getElementById('status-latency');
+const statusVersion = document.getElementById('status-version');
+const statusUpdated = document.getElementById('status-updated');
+const refreshStatusBtn = document.getElementById('refresh-status');
+
+const chatForm = document.getElementById('chat-form');
+const messageInput = document.getElementById('message-input');
+const sendBtn = document.getElementById('send-btn');
+const clearBtn = document.getElementById('clear-btn');
+const exampleChips = document.querySelectorAll('.example-chip');
+
+const responseContainer = document.getElementById('response-container');
+const responseContent = document.getElementById('response-content');
+const responseStatus = document.getElementById('response-status');
+const responseTime = document.getElementById('response-time');
+const responseSize = document.getElementById('response-size');
+const copyBtn = document.getElementById('copy-btn');
+
+// 1. ตรวจสอบสถานะระบบ (Health Check)
+async function checkSystemStatus() {
+    const startTime = Date.now();
+    statusText.innerText = 'กำลังตรวจสอบ...';
+    statusText.className = 'text-[14px] font-medium text-zinc-400';
+    
+    try {
+        // แนะนำให้ยิงไปที่ Endpoint ของคุณ (เช่น /api/health หรือ / ตามความเหมาะสม)
+        const response = await fetch(`${BASE_URL}/`, { method: 'GET' });
+        const latency = Date.now() - startTime;
+        
+        statusDot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-500 block';
+        statusPulse.className = 'absolute inset-0 w-2.5 h-2.5 rounded-full bg-emerald-500/50 animate-ping block';
+        statusText.innerText = 'ออนไลน์';
+        statusText.className = 'text-[14px] font-medium text-emerald-400';
+        statusLatency.innerText = `${latency} ms`;
+        statusVersion.innerText = 'v1.0.0-preview';
+    } catch (error) {
+        statusDot.className = 'w-2.5 h-2.5 rounded-full bg-rose-500 block';
+        statusPulse.className = 'absolute inset-0 w-2.5 h-2.5 rounded-full bg-rose-500/50 animate-ping block';
+        statusText.innerText = 'ออฟไลน์';
+        statusText.className = 'text-[14px] font-medium text-rose-400';
+        statusLatency.innerText = '—';
+        statusVersion.innerText = '—';
+    } finally {
+        const now = new Date();
+        statusUpdated.innerText = `อัปเดตล่าสุด: ${now.toLocaleTimeString('th-TH')}`;
+    }
+}
+
+// 2. การส่งข้อความแชทไปยัง API
+chatForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const prompt = messageInput.value.trim();
+    if (!prompt) return;
+
+    // UI States: Loading
+    sendBtn.disabled = true;
+    sendBtn.innerHTML = '<span>กำลังส่ง...</span>';
+    responseContainer.classList.remove('hidden');
+    responseContent.innerText = 'กำลังประมวลผลคำสั่งซื้อและวิเคราะห์ข้อมูล...';
+    responseStatus.innerHTML = `<span class="text-[11px] px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/20 text-amber-300">PENDING</span>`;
+    responseTime.innerText = 'Latency: —';
+    responseSize.innerText = 'Size: —';
+
+    const startTime = Date.now();
+
+    try {
+        const response = await fetch(`${BASE_URL}/api/chat`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: prompt }) // ปรับแก้ Key ตามที่ Backend ของคุณใช้ (เช่น prompt, message, text)
+        });
+
+        const latency = Date.now() - startTime;
+        const dataText = await response.text();
+        
+        // คำนวณขนาดข้อมูล
+        const byteSize = new Blob([dataText]).size;
+        const displaySize = byteSize > 1024 ? `${(byteSize/1024).toFixed(2)} KB` : `${byteSize} Bytes`;
+
+        if (response.ok) {
+            // สำเร็จ
+            try {
+                const json = JSON.parse(dataText);
+                // แสดงผลลัพธ์ถ้าได้เป็น JSON (ปรับจุดนี้ตาม Response โครงสร้างของคุณ เช่น json.reply หรือ json.response)
+                responseContent.innerText = json.reply || json.response || JSON.stringify(json, null, 2);
+            } catch {
+                responseContent.innerText = dataText; // แสดง Text ดิบถ้าไม่ใช่ JSON
+            }
+            responseStatus.innerHTML = `<span class="text-[11px] px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-300">200 OK</span>`;
+        } else {
+            // เกิดข้อผิดพลาดจากฝั่ง Server
+            responseContent.innerText = `Error: ${response.status} ${response.statusText}\n${dataText}`;
+            responseStatus.innerHTML = `<span class="text-[11px] px-2 py-0.5 rounded bg-rose-500/10 border border-rose-500/20 text-rose-300">ERROR</span>`;
+        }
+        
+        responseTime.innerText = `Latency: ${latency}ms`;
+        responseSize.innerText = `Size: ${displaySize}`;
+
+    } catch (error) {
+        // ข้อผิดพลาดจากการเชื่อมต่อ (Network Error)
+        responseContent.innerText = `ไม่สามารถเชื่อมต่อกับ API ได้: ${error.message}`;
+        responseStatus.innerHTML = `<span class="text-[11px] px-2 py-0.5 rounded bg-rose-500/10 border border-rose-500/20 text-rose-300">FAILED</span>`;
+    } finally {
+        sendBtn.disabled = false;
+        sendBtn.innerHTML = `<span class="relative z-10 flex items-center gap-1.5">
+            <span>ส่ง</span>
+            <svg class="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+            </svg>
+        </span>`;
+    }
+});
+
+// 3. ปุ่มกดตัวอย่างข้อความ (Example Chips)
+exampleChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+        messageInput.value = chip.getAttribute('data-example');
+        messageInput.focus();
+    });
+});
+
+// 4. ปุ่มล้างข้อความ (Clear Button)
+clearBtn.addEventListener('click', () => {
+    messageInput.value = '';
+    responseContainer.classList.add('hidden');
+    messageInput.focus();
+});
+
+// 5. ปุ่มคัดลอกข้อความตอบกลับ (Copy to Clipboard)
+copyBtn.addEventListener('click', () => {
+    const textToCopy = responseContent.innerText;
+    navigator.clipboard.writeText(textToCopy).then(() => {
+        const originalText = copyBtn.innerHTML;
+        copyBtn.innerHTML = 'คัดลอกแล้ว!';
+        copyBtn.classList.add('text-emerald-400');
+        setTimeout(() => {
+            copyBtn.innerHTML = originalText;
+            copyBtn.classList.remove('text-emerald-400');
+        }, 2000);
+    });
+});
+
+// 6. ทางลัดปุ่มกด (Ctrl + Enter หรือ Cmd + Enter เพื่อส่งข้อความ)
+messageInput.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        chatForm.dispatchEvent(new Event('submit'));
+    }
+});
+
+// 7. จัดการเหตุการณ์เมื่อกดปุ่มรีเฟรชสถานะระบบ
+refreshStatusBtn.addEventListener('click', checkSystemStatus);
+
+// เริ่มต้นเช็คสถานะทันทีที่โหลดหน้าจอเสร็จ
+document.addEventListener('DOMContentLoaded', checkSystemStatus);
+</script>
+</body>
+</html>
+
