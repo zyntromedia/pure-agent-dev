@@ -1,0 +1,14 @@
+watchdog>=3.0.0
+pydub>=0.25.1
+GitPython>=3.1.0
+
+
+# Python deps
+markdown
+pyyaml
+pydantic
+
+# Claude plugins - install these in Claude Code terminal:
+# /plugin install cartographer@claude-plugins-official
+# /plugin install claude-code-safety-net@claude-plugins-official
+# /plugin install claude-hud@claude-plugins-official
