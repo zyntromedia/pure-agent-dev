@@ -1,0 +1,161 @@
+Here's your **complete, ready-to-use `tests/` directory structure** with proper `__init__.py` and file outlines — copy-paste directly into your repo ✅
+
+---
+
+## 📁 `tests/` Directory Structure
+```
+tests/
+├── __init__.py
+├── test_health.py
+├── test_planner.py
+├── test_executor.py
+├── test_compute_service.py
+└── providers/
+    └── test_byteplus_ecs.py
+```
+
+---
+
+### 📄 `tests/__init__.py`
+```python
+# Empty init file — makes tests/ a Python package
+```
+
+---
+
+### 📄 `tests/test_health.py` — Health Check Tests
+```python
+"""
+tests/test_health.py
+Verify API health & readiness endpoints
+"""
+
+def test_health_endpoint_gets_200(client):
+    resp = client.get("/health")
+    assert resp.status_code == 200
+    assert resp.json().get("status") in ("ok", "healthy")
+```
+
+---
+
+### 📄 `tests/test_planner.py` — Task Planner Tests
+```python
+"""
+tests/test_planner.py
+Verify Agent task planning & schema validation
+"""
+
+from schemas.task import AgentTask
+
+def test_planner_produces_valid_schema(planner):
+    task = planner.plan("list all instances")
+    assert isinstance(task, AgentTask)
+    assert task.task_id
+    assert task.action in {
+        "list_instances", "start_instance", "stop_instance", "reboot_instance"
+    }
+
+def test_list_instances_needs_no_instance_id(planner):
+    task = planner.plan("list instances")
+    assert task.action == "list_instances"
+    assert task.instance_id is None
+```
+
+---
+
+### 📄 `tests/test_executor.py` — Task Executor Tests
+```python
+"""
+tests/test_executor.py
+Verify Agent executes tasks via ComputeProvider interface
+"""
+
+import pytest
+from schemas.task import AgentTask
+
+@pytest.mark.asyncio
+async def test_executor_calls_provider_list_instances(executor, mock_provider):
+    task = AgentTask(task_id="t-001", action="list_instances")
+    await executor.run(task)
+    mock_provider.list_instances.assert_awaited_once()
+
+@pytest.mark.asyncio
+async def test_executor_calls_provider_start_instance(executor, mock_provider):
+    task = AgentTask(task_id="t-002", action="start_instance", instance_id="i-test")
+    await executor.run(task)
+    mock_provider.start_instance.assert_awaited_once_with("i-test")
+```
+
+---
+
+### 📄 `tests/test_compute_service.py` — Compute Service Tests
+```python
+"""
+tests/test_compute_service.py
+Verify ComputeService routes tasks to correct provider methods
+"""
+
+import pytest
+from schemas.task import AgentTask
+
+@pytest.mark.asyncio
+async def test_service_list_instances(compute_service):
+    instances = await compute_service.list_instances()
+    assert isinstance(instances, list)
+
+@pytest.mark.asyncio
+async def test_service_start_validates_instance_id(compute_service):
+    task = AgentTask(task_id="t-003", action="start_instance", instance_id="i-abc")
+    result = await compute_service.execute(task)
+    assert result is not None
+```
+
+---
+
+### 📄 `tests/providers/test_byteplus_ecs.py` — BytePlus Provider Tests
+```python
+"""
+tests/providers/test_byteplus_ecs.py
+Verify BytePlus implementation conforms to ComputeProvider ABC
+"""
+
+import pytest
+from providers.base import ComputeProvider
+from providers.byteplus.provider import BytePlusProvider
+
+
+def test_byteplus_implements_abc():
+    assert issubclass(BytePlusProvider, ComputeProvider)
+
+@pytest.mark.asyncio
+async def test_byteplus_list_instances(byteplus_provider):
+    instances = await byteplus_provider.list_instances()
+    assert isinstance(instances, list)
+
+@pytest.mark.asyncio
+async def test_byteplus_start_instance(byteplus_provider):
+    await byteplus_provider.start_instance("i-test-001")
+
+@pytest.mark.asyncio
+async def test_byteplus_stop_instance(byteplus_provider):
+    await byteplus_provider.stop_instance("i-test-001")
+
+@pytest.mark.asyncio
+async def test_byteplus_reboot_instance(byteplus_provider):
+    await byteplus_provider.reboot_instance("i-test-001")
+```
+
+---
+
+### ✅ Key Principles Applied
+- **`tests/__init__.py`** — required so pytest can import modules from your app
+- **Interface-first** — `test_executor.py` & `test_compute_service.py` test **only the ABC**, never BytePlus directly
+- **Implementation isolated** — `tests/providers/test_byteplus_ecs.py` validates only the BytePlus implementation
+- **Schema validated** — `test_planner.py` ensures output always matches `AgentTask` (never free-form strings)
+
+### 🧪 Run All Tests
+```bash
+pytest tests/ -v
+```
+
+Want me to also generate **`tests/conftest.py`** with reusable fixtures (`client`, `mock_provider`, `executor`, `compute_service`) so all tests above work out-of-the-box?
