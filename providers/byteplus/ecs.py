@@ -1,7 +1,7 @@
-#from app.providers.base import ComputeProvider
-#from app.providers.byteplus.client import BytePlusClient
+from app.providers.base import ComputeProvider
+from app.providers.byteplus.client import BytePlusClient
 
-#class BytePlusECSProvider(ComputeProvider):
+class BytePlusECSProvider(ComputeProvider):
     
 def __init__(self, client: BytePlusClient):
     self.client = client
