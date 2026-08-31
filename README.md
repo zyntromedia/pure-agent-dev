@@ -1,173 +1,181 @@
-# pure-agent-dev 🤖
+# 🤖 Pure Agent Dev — ZyntroMedia
 
-ระบบ Monitor ลิงก์สินค้าแฟชั่นอัตโนมัติ พร้อมแจ้งเตือนผ่าน LINE เมื่อลิงก์มีปัญหา
+> **AI-Powered Monitoring & Automation Platform** — Built with Python, GitHub Actions, and enterprise-grade workflows
+
+---
+
+## 📋 Overview
+
+**pure-agent-dev** is an automation and monitoring platform designed to run continuously on GitHub Actions — no servers required. Currently includes **link availability monitoring** with LINE notifications, with expandable architecture for additional AI agents, providers, and workflows.
 
 ---
 
 ## ✨ Features
 
-- 🔍 เช็กสถานะลิงก์สินค้าทุกรายการอัตโนมัติ
-- 📨 แจ้งเตือนผ่าน LINE เฉพาะเมื่อสถานะเปลี่ยนแปลง (ไม่ spam)
-- 🔁 Retry อัตโนมัติเมื่อเน็ตกระตุก (สูงสุด 3 ครั้ง)
-- 📝 บันทึก Log ทุกครั้งที่รัน
-- ⚙️ รันอัตโนมัติผ่าน GitHub Actions (ฟรี ไม่ต้องมีเซิร์ฟเวอร์)
+### 🔗 Link Monitor (Active)
+- 🔍 **Auto-check status** of every product link periodically
+- 📨 **LINE notifications** — only sends when status changes (no spam)
+- 🔁 **Auto-retry** on network hiccups (up to 3 attempts)
+- 📝 **Full logging** on every run
+- 🤖 **Zero-cost automation** via GitHub Actions scheduler
+- ✅ **Idempotent** — safe to run concurrently or repeatedly
+
+### 🏗️ Platform Capabilities
+- 📁 **Modular structure** — providers, schemas, workflows separated
+- ✅ **Pre-commit hooks** + CI quality checks
+- 🔒 **CodeQL security scanning** enabled
+- 🧪 **Test suite** with automated run workflows
+- 📋 **Standardized schemas** for compute & automation tasks
 
 ---
 
-## 📁 โครงสร้างไฟล์
+## 📁 Project Structure
 
 ```
 pure-agent-dev/
-│
-├── link-monitor/
-│   ├── monitor.py          # สคริปต์หลัก
-│   ├── links.csv           # รายชื่อลิงก์สินค้า
-│   └── requirements.txt    # Python dependencies
-│
-└── .github/
-    └── workflows/
-        └── monitor.yml     # GitHub Actions workflow
+├── .github/
+│   └── workflows/           # CI, monitoring, security workflows
+├── .skills/                 # AI skill definitions
+├── docs/                    # Documentation
+├── providers/               # Integration providers (base + impl)
+│   └── base.py
+├── schemas/                 # Data models & schemas
+│   └── compute.py
+├── tests/                   # Test suite
+├── workflows/               # Compliance & automation workflows
+├── compute.service.py       # Core compute service
+├── pyproject.toml           # Project metadata & config
+├── requirement.txt          # Python dependencies
+├── .ci.yaml                 # CI configuration
+├── .pre-commit-config.yaml  # Pre-commit hooks
+├── .env                     # Local environment variables (NOT committed)
+└── README.md
 ```
 
 ---
 
-## 🚀 วิธีติดตั้ง
+## 🚀 Quick Start
 
-### 1. Clone repo
-
+### 1. Clone Repository
 ```bash
-git clone https://github.com/1napz/pure-agent-dev.git
+git clone https://github.com/zyntromedia/pure-agent-dev.git
 cd pure-agent-dev
 ```
 
-### 2. ติดตั้ง dependencies (สำหรับรัน local)
-
+### 2. Install Dependencies
 ```bash
-pip install -r link-monitor/requirements.txt
+pip install -r requirement.txt
 ```
 
-### 3. สร้างไฟล์ `.env` (สำหรับรัน local เท่านั้น)
-
+### 3. Local Environment Setup
+Create `.env` file in root:
 ```env
 MY_LINE_KEY=your_channel_access_token
 MY_LINE_USER_ID=your_line_user_id
 ```
 
-> ⚠️ ห้าม push ไฟล์ `.env` ขึ้น GitHub เด็ดขาด
-
-### 4. เพิ่มลิงก์สินค้าใน `links.csv`
-
-```csv
-name,url
-ชื่อสินค้า 1,https://example.com/product/1
-ชื่อสินค้า 2,https://example.com/product/2
-```
+> ⚠️ **Never commit `.env`** — already in `.gitignore`
 
 ---
 
-## ⚙️ ตั้งค่า GitHub Actions
+## ⚙️ GitHub Actions Setup
 
-### เพิ่ม Secrets
+### Add Repository Secrets
+Go to **Settings → Secrets and variables → Actions** → Add these secrets:
 
-ไปที่ `Settings → Secrets and variables → Actions` แล้วเพิ่ม:
-
-| Secret Name | ค่าที่ต้องใส่ |
+| Secret Name | Purpose |
 |---|---|
-| `MY_LINE_KEY` | Channel Access Token จาก LINE Developers |
-| `MY_LINE_USER_ID` | User ID ของคุณ |
+| `MY_LINE_KEY` | LINE Channel Access Token |
+| `MY_LINE_USER_ID` | LINE User ID for notifications |
 
-### ปรับเวลารัน
-
-แก้ใน `.github/workflows/monitor.yml`:
-
+### Configure Schedule
+Edit workflow file `.github/workflows/monitor.yml`:
 ```yaml
-- cron: '0 */2 * * *'    # ทุก 2 ชั่วโมง
-- cron: '*/30 * * * *'   # ทุก 30 นาที
-- cron: '0 9 * * *'      # ทุกวัน 9 โมงเช้า
+on:
+  schedule:
+    - cron: '0 */2 * * *'    # Every 2 hours
+    # - cron: '*/30 * * * *'  # Every 30 minutes
+    # - cron: '0 9 * * *'      # Daily at 09:00
 ```
 
-### ทดสอบรันมือ
-
-ไปที่ `Actions → Link Monitor → Run workflow`
+### Manual Trigger
+Go to **Actions → Link Monitor → Run workflow** → Click **Run**
 
 ---
 
-## 📨 ตัวอย่างข้อความแจ้งเตือน LINE
+## 📨 Notification Examples
 
-| สถานการณ์ | ข้อความ |
+| Scenario | Message Sent to LINE |
 |---|---|
-| ลิงก์พึ่งหยุดทำงาน | 🚫 ชื่อสินค้า — ลิงก์เพิ่งหยุดทำงาน! |
-| ลิงก์กลับมาแล้ว | ✅ ชื่อสินค้า — ลิงก์กลับมาใช้งานได้แล้ว! 🎉 |
+| Link just went down | 🚫 **{Name}** — Link just stopped working! |
+| Link recovered | ✅ **{Name}** — Link is back online! 🎉 |
+| Still down | *(No notification — suppressed)* |
+| Still healthy | *(No notification — suppressed)* |
 
 ---
 
-## 🛠️ Tech Stack
+## 🛠 Tech Stack
 
-- Python 3.11
-- [Requests](https://docs.python-requests.org/) — HTTP client
-- [python-dotenv](https://pypi.org/project/python-dotenv/) — จัดการ environment variables
-- LINE Messaging API — ส่งการแจ้งเตือน
-- GitHub Actions — รันอัตโนมัติ
+| Component | Technology |
+|---|---|
+| Language | Python 3.11+ |
+| HTTP Client | `requests` |
+| Env Management | `python-dotenv` |
+| Notifications | LINE Messaging API |
+| CI/CD | GitHub Actions |
+| Security | CodeQL scanning |
+| Pre-commit | `pre-commit` framework |
+| Hosting | GitHub Actions runners (free) |
+
+---
+
+## 🧪 Running Tests
+
+```bash
+# Run all tests
+pytest tests/ -v
+
+# Run with coverage
+pytest tests/ --cov=. --cov-report=term-missing
+```
+
+---
+
+## 🔒 Security & Compliance
+
+- ✅ **CodeQL Analysis** — Runs on every push
+- ✅ **Pre-commit Hooks** — Linting, secrets detection, formatting
+- ✅ **Secrets in GitHub Only** — Never committed to repo
+- ✅ **Comprehensive `.gitignore`** — Prevents accidental leaks
+- ✅ **Branch Protection Rules** — Configurable via repo settings
+
+---
+
+## 📌 Roadmap
+
+- [x] Link availability monitor + LINE alerts
+- [ ] Add Google Search / Shopee/Lazada/TikTok scraping
+- [ ] SQLite database for history & analytics
+- [ ] Email/Slack notification providers
+- [ ] Dashboard & analytics reporting
+- [ ] Docker containerization
+- [ ] More AI agent skills in `.skills/`
+
+---
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`feature/description`)
+3. Commit your changes
+4. Open a Pull Request — CI will automatically run tests & security scans
 
 ---
 
 ## 📄 License
 
-Private repository — All rights reserved © 1napz
+**Private Repository** — Copyright © 2026 ZyntroMedia. All rights reserved.
 
+---
 
-นี่คือร่างของไฟล์ README.md สำหรับโปรเจกต์ **Python Playwright Google Search Scraper** ของคุณ โดยรวมเนื้อหาตั้งแต่การติดตั้ง การรันสคริปต์ ไปจนถึงการตั้งค่า Automation ครับ
-# Python Playwright Google Search Scraper
-ระบบดึงข้อมูลสินค้าขายดีจาก Google Search (Shopee, Lazada, TikTok Shop) โดยใช้ Python และ Playwright เพื่อนำไปวิเคราะห์ข้อมูลหรือติดตามเทรนด์สินค้า
-## 📋 คุณสมบัติ (Features)
- * **Search Scraping:** รองรับการค้นหาแบบระบุเจาะจงเว็บไซต์ (Site Specific) เช่น site:shopee.co.th
- * **Data Export:** บันทึกข้อมูลออกมาในรูปแบบไฟล์ CSV พร้อมใช้งาน
- * **Automation Ready:** รองรับการรันแบบ Headless เพื่อทำงานเบื้องหลัง
- * **Notification:** ระบบส่งรายงานผ่าน Email อัตโนมัติเมื่อ Scraper ทำงานเสร็จสิ้น
-## 🚀 การติดตั้ง (Installation)
- 1. **ติดตั้ง Python** (แนะนำเวอร์ชัน 3.10 ขึ้นไป)
- 2. **ติดตั้ง Library ที่จำเป็น:**
-   ```bash
-   pip install playwright
-   playwright install
-   
-   ```
-## 🛠 การใช้งาน (Usage)
-### 1. การตั้งค่าสคริปต์
-แก้ไขไฟล์ Google Search.py เพื่อระบุคำค้นหา (Queries) ที่คุณต้องการ:
-```python
-queries = [
-    "site:shopee.co.th สินค้าขายดี 2026",
-    "site:lazada.co.th สินค้าขายดี"
-]
-
-```
-### 2. การรันโปรแกรม
-รันคำสั่งผ่าน Terminal:
-```bash
-python google_search.py
-
-```
-ข้อมูลจะถูกบันทึกลงในไฟล์ google_bestsellers.csv ในโฟลเดอร์เดียวกับสคริปต์
-## 🤖 ระบบอัตโนมัติ (Automation & Scheduling)
-หากต้องการให้ระบบทำงานเองโดยไม่ต้องกดรัน:
-### Windows (Task Scheduler)
- 1. เปิด **Task Scheduler** > **Create Basic Task**
- 2. ตั้ง Trigger เป็น **Daily** (ทุกวัน)
- 3. Action เลือก **Start a program**
- 4. โปรแกรม: path\to\your\python.exe
- 5. อาร์กิวเมนต์: path\to\your\google_search.py
-### Linux/macOS (Cron Job)
-ใช้คำสั่ง crontab -e และเพิ่มบรรทัดนี้ (รันทุกวันเวลา 08:00):
-```bash
-0 8 * * * /usr/bin/python3 /path/to/your/google_search.py
-
-```
-## 💡 ข้อแนะนำเพิ่มเติม
- * **CAPTCHA Handling:** หากโดน Google บล็อกบ่อยครั้ง แนะนำให้เพิ่มการตั้งค่า user_agent ใน browser.new_context() หรือใช้บริการ Proxy
- * **Security:** หากเปิดใช้งานระบบส่งอีเมล อย่าลืมตั้งค่า App Password สำหรับ Gmail เพื่อความปลอดภัย
- * **Logging:** แนะนำให้ใช้ไลบรารี loguru เพื่อบันทึกประวัติการทำงาน (Log) ลงไฟล์แยกตามวันที่ เพื่อความสะดวกในการตรวจสอบข้อผิดพลาด
-## 🛠 เครื่องมือเสริมแนะนำ
- * **BeautifulSoup4:** สำหรับกรณีต้องการดึงข้อมูลเชิงลึกจาก DOM ของหน้าเว็บที่ซับซ้อน
- * **SQLite:** หากข้อมูลมีจำนวนมาก แนะนำให้ย้ายจากการเก็บเป็น CSV มาเป็น SQLite Database เพื่อป้องกันปัญหาข้อมูลซ้ำ (Duplicate)
-คุณสามารถคัดลอกเนื้อหานี้ไปสร้างเป็นไฟล์ README.md ไว้ในโฟลเดอร์โปรเจกต์ของคุณได้เลยครับ
+Would you like me to save this directly as `README.md` content for you to commit? Or should I adjust the tone/sections further? 😊
