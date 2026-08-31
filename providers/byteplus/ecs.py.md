@@ -1,3 +1,8 @@
+#from app.providers.base import ComputeProvider
+#from app.providers.byteplus.client import BytePlusClient
+
+#class BytePlusECSProvider(ComputeProvider):
+    
 def __init__(self, client: BytePlusClient):
     self.client = client
 
@@ -23,3 +28,7 @@ async def reboot_instance(self, instance_id: str):
         "instance_id": instance_id,
         "status": "rebooting",
     }
+
+#ตัว implementation จริงค่อยเสียบ BytePlus SDK ตรงนี้.
+
+#The rest of the application remains unchanged.
